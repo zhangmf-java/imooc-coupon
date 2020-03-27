@@ -1,0 +1,44 @@
+#java -jar coupon-eureka-1.0-SNAPSHOT.jar --spring.profiles.active=server1
+spring:
+  application:
+    name: coupon-eureka   #多实例的应用需要一致否则无法相互复制
+  profiles: server1  #用于区分服务
+server:
+  port: 8000
+eureka:
+  instance:
+    hostname: server1  #需要到host文件中指定server1映射的IP地址
+    prefer-ip-address: false  #默认值为true springcloud 不允许通过ip地址的方式部署多个Eureka实例
+  client:
+    service-url:
+      defaultZone: http://server2:8001/eureka,http://server3:8002/eureka
+
+---
+spring:
+  application:
+    name: coupon-eureka
+    profiles: server2
+server:
+  port: 8001
+eureka:
+  instance:
+    hostname: server2
+    prefer-ip-address: false
+  client:
+    service-url:
+      defaultZone: http://server1:8000/eureka,http://server3:8002/eureka
+
+---
+spring:
+  application:
+    name: coupon-eureka
+    profiles: server3
+server:
+  port: 8002
+eureka:
+  instance:
+    hostname: server3
+    prefer-ip-address: false
+  client:
+    service-url:
+      defaultZone: http://server1:8000/eureka,http://server2:8001/eureka
